@@ -2,14 +2,16 @@ contract qualityPay {
     
     event LogBoxDisturbed(address indexed boxID, address indexed courier, uint timestamp);
     event LogBoxFixed(address indexed boxID, address indexed courier, uint timestamp);
-    event LogStartTrip(address indexed boxID, address indexed courier, uint timestamp);
+    event LogStartTrip(address indexed boxID, address indexed courier, uint timestamp, uint bounty);
     event LogEndTrip(address indexed boxID, address indexed courier, uint timestamp);
     
     address public commandCenter = msg.sender;
+    uint public minShippingCost = 5 ether;
     
     mapping(address => Box) Boxes;
     
     struct Box{
+        uint bounty;
         bool onTrip;
         bool isTilted; //if not tilted then we assume its flat
         address currentCourier;
@@ -33,7 +35,7 @@ contract qualityPay {
         
     }
     
-    function recordBoxDisturbed(address _drawer, uint _lat, uint _long) onlyMovingBoxes {
+    function recordBoxDisturbed(address _currentCourier) onlyMovingBoxes {
         LogBoxDisturbed(msg.sender,Boxes[msg.sender].currentCourier, now);
         Boxes[msg.sender].isTilted = true;
     }
@@ -44,17 +46,22 @@ contract qualityPay {
     }
     
     function startBox(address _boxID, address _currentCourier) {
+        if (msg.value <= minShippingCost)
+            throw;
         Boxes[_boxID].onTrip = true;
         Boxes[_boxID].currentCourier = _currentCourier;
-        LogStartTrip(_boxID, Boxes[_boxID].currentCourier, now);
+        LogStartTrip(_boxID, Boxes[_boxID].currentCourier, now, msg.value);
         
     }
     
-    function payoutBox(uint payout, address _boxID) onlycommandCenter{
+    function endBox(address _boxID) onlycommandCenter{
         LogEndTrip(_boxID, Boxes[_boxID].currentCourier, now);
+    }
+    
+    function payoutBox(uint payout, address _boxID) onlycommandCenter{
+        Boxes[_boxID].onTrip = false;
         if (Boxes[_boxID].currentCourier.send(payout)){
             
         }
-        
     }
 }

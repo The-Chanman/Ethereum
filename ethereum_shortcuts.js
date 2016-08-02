@@ -4,22 +4,14 @@ var balances = function() {
   console.log("eth.accounts[1]: " + web3.fromWei(eth.getBalance(eth.accounts[1])).toFixed(decimalPlaces) );
   console.log("eth.accounts[2]: " + web3.fromWei(eth.getBalance(eth.accounts[2])).toFixed(decimalPlaces) );
   console.log("eth.accounts[3]: " + web3.fromWei(eth.getBalance(eth.accounts[3])).toFixed(decimalPlaces) );
-  // console.log("eth.accounts[4]: " + web3.fromWei(eth.getBalance(eth.accounts[4])).toFixed(decimalPlaces) );
-  // console.log("eth.accounts[5]: " + web3.fromWei(eth.getBalance(eth.accounts[5])).toFixed(decimalPlaces) );
-  // console.log("eth.accounts[6]: " + web3.fromWei(eth.getBalance(eth.accounts[6])).toFixed(decimalPlaces) );
-  // console.log("eth.accounts[7]: " + web3.fromWei(eth.getBalance(eth.accounts[7])).toFixed(decimalPlaces) );
 }
 
-// var unlock = function() {
-//   personal.unlockAccount(eth.accounts[0],"joe123",900000);
-//   personal.unlockAccount(eth.accounts[1],"joe123",900000);
-//   personal.unlockAccount(eth.accounts[2],"Liberty",900000);
-//   personal.unlockAccount(eth.accounts[3],"Progressive",900000)
-//   personal.unlockAccount(eth.accounts[4],"crash",900000);
-//   personal.unlockAccount(eth.accounts[5],"joe123",900000);
-//   personal.unlockAccount(eth.accounts[6],"joe123",900000);
-//   personal.unlockAccount(eth.accounts[7],"joe123",900000);
-// }
+var unlock = function() {
+  personal.unlockAccount(eth.accounts[0],"ch52690",900000);
+  personal.unlockAccount(eth.accounts[1],"ch52690",900000);
+  personal.unlockAccount(eth.accounts[2],"ideo123",900000);
+  personal.unlockAccount(eth.accounts[3],"123",900000)
+}
 
 function distributeEth(address){
   eth.sendTransaction({from:eth.coinbase, to:address, value:web3.toWei(100)})
