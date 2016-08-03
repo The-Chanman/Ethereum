@@ -28,7 +28,7 @@ function qualityPayListener(myContract){
   StartingTrip.watch(function(error, result){
       if (!error){
         console.log("*********************************************************************************");
-        console.log("Box " + result.args.boxID + "is starting trip with courier " + result.args.courier + " at "+ timeConverter(result.args.timestamp) +"!");
+        console.log("Box " + result.args.boxID + " is starting trip with courier " + result.args.courier + " at "+ timeConverter(result.args.timestamp) +"!");
         console.log("*********************************************************************************");
         onTrip = true;
         startTime = result.args.timestamp;
@@ -43,10 +43,10 @@ function qualityPayListener(myContract){
   BoxDisturbed.watch(function(error, result){
       if (!error && onTrip){
         console.log("*********************************************************************************");
-        console.log("Box " + result.args.boxID + "with courier " + result.args.courier + " at "+ timeConverter(result.args.timestamp) +" has been disturbed!");
+        console.log("Box " + result.args.boxID + " with courier " + result.args.courier + " at "+ timeConverter(result.args.timestamp) +" has been disturbed!");
         console.log("*********************************************************************************");
         lastDisturbed = result.args.timestamp;
-        disturbed = false;
+        disturbed = true;
       }
       else {
         console.log("oops something went wrong...")
@@ -55,16 +55,25 @@ function qualityPayListener(myContract){
 
   var BoxFixed = qualityPay.LogBoxFixed();
   BoxFixed.watch(function(error, result){
-      if (!error && onTrip && disturbed){
-        disturbedDuration += result.args.timestamp - lastDisturbed;
-        console.log("*********************************************************************************");
-        console.log("Box " + result.args.boxID + "with courier " + result.args.courier + " at "+ timeConverter(result.args.timestamp) +" has been fixed!");
-        console.log("Box has been disturbed for a total of " + disturbedDuration + "on this trip.");
-        console.log("*********************************************************************************");
-        disturbed = false;
-      }
-      else {
+    console.log(error + " " + onTrip + " " + disturbed);
+      if (!error){
+        if (onTrip){
+          if (disturbed){
+            disturbedDuration += result.args.timestamp - lastDisturbed;
+            console.log("*********************************************************************************");
+            console.log("Box " + result.args.boxID + " with courier " + result.args.courier + " at "+ timeConverter(result.args.timestamp) +" has been fixed!");
+            console.log("Box has been disturbed for a total of " + disturbedDuration + " on this trip.");
+            console.log("*********************************************************************************");
+            disturbed = false;
+          } else {
+            console.log("Failed because disturbed == false");
+          }
+        } else {
+          console.log("Failed because onTrip == false");
+        }
+      } else {
         console.log("oops something went wrong...");
+        console.log(error + " IS BAD!!!!");
       }
   });
 
@@ -76,13 +85,12 @@ function qualityPayListener(myContract){
         var bPayout = .1 * payout;
         var cPayout = .9 * payout;
         console.log("*********************************************************************************");
-        console.log("Box " + result.args.boxID + "is ending trip with courier " + result.args.courier + " at "+ timeConverter(result.args.timestamp) +"!");
-        console.log("The Box was disturbed for " + disturbedDuration + " seconds out of a trip " + (result.args.timestamp - startTime) + "seconds long.");
+        console.log("Box " + result.args.boxID + " is ending trip with courier " + result.args.courier + " at "+ timeConverter(result.args.timestamp) +"!");
+        console.log("The Box was disturbed for " + disturbedDuration + " seconds out of a trip " + (result.args.timestamp - startTime) + " seconds long.");
         console.log("The original services payout is " + bounty + " - " + disturbedCost + " for the box disturbances for a total of " + payout);
         console.log("10% goes to the box to cover transaction fees, refunds, maintenance. 90% goes to the courier.");
         console.log("*********************************************************************************");
         // payout to the courier 
-
         // estimatedGasCost = eth.estimateGas({from:eth.coinbase,to:qualitypay.address,data:qualitypay.payoutBox.getData(payout,eth.accounts[1])});
         qualityPay.payoutBox(cPayout, result.args.boxID, disturbedCost);
 

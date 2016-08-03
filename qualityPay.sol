@@ -15,6 +15,7 @@ contract qualityPay {
         bool onTrip;
         bool isTilted; //if not tilted then we assume its flat
         address currentCourier;
+        address sender;
     }
 
     modifier onlyMovingBoxes {
@@ -46,9 +47,10 @@ contract qualityPay {
     }
     
     function startBox(address _boxID, address _currentCourier) {
-        if (msg.value <= minShippingCost)
+        if (msg.value < minShippingCost)
             throw;
         Boxes[_boxID].onTrip = true;
+        Boxes[_boxID].sender = msg.sender;
         Boxes[_boxID].currentCourier = _currentCourier;
         LogStartTrip(_boxID, Boxes[_boxID].currentCourier, now, msg.value);
         
@@ -58,9 +60,12 @@ contract qualityPay {
         LogEndTrip(_boxID, Boxes[_boxID].currentCourier, now);
     }
     
-    function payoutBox(uint payout, address _boxID) onlycommandCenter{
+    function payoutBox(uint cPayout, address _boxID, uint change) onlycommandCenter{
         Boxes[_boxID].onTrip = false;
-        if (Boxes[_boxID].currentCourier.send(payout)){
+        if (Boxes[_boxID].currentCourier.send(cPayout)){
+            
+        }
+        if (Boxes[_boxID].sender.send(change)){
             
         }
     }
