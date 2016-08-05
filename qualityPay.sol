@@ -8,7 +8,7 @@ contract qualityPay {
     address public commandCenter = msg.sender;
     uint public minShippingCost = 5 ether;
     
-    mapping(address => Box) Boxes;
+    mapping(address => Box) public Boxes;
     
     struct Box{
         uint bounty;
@@ -50,6 +50,7 @@ contract qualityPay {
         if (msg.value < minShippingCost)
             throw;
         Boxes[_boxID].onTrip = true;
+        Boxes[msg.sender].isTilted = false;
         Boxes[_boxID].sender = msg.sender;
         Boxes[_boxID].currentCourier = _currentCourier;
         LogStartTrip(_boxID, Boxes[_boxID].currentCourier, now, msg.value);

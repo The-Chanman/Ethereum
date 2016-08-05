@@ -33,7 +33,7 @@ function timeConverter(UNIX_timestamp){
 
 function resetAccountBalances() {
     leftover = 5000420000000000000;
-    for (i = 2; i < web3.eth.accounts.length; i++) {
+    for (i = 1; i < web3.eth.accounts.length; i++) {
         fromAddress = web3.eth.accounts[i];
         fromBalance = web3.eth.getBalance(fromAddress);
         if (fromBalance > leftover){
