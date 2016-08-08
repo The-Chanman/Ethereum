@@ -12,8 +12,9 @@ contract qualityPay {
     
     struct Box{
         uint bounty;
+        uint disturbedDuration;
+        uint lastDisturbed;
         bool onTrip;
-        bool isTilted; //if not tilted then we assume its flat
         address currentCourier;
         address sender;
     }
@@ -38,19 +39,18 @@ contract qualityPay {
     
     function recordBoxDisturbed(address _currentCourier) onlyMovingBoxes {
         LogBoxDisturbed(msg.sender,Boxes[msg.sender].currentCourier, now);
-        Boxes[msg.sender].isTilted = true;
+        Boxes[msg.sender].lastDisturbed = now;
     }
 
     function recordBoxFixed() onlyMovingBoxes {
         LogBoxFixed(msg.sender, Boxes[msg.sender].currentCourier, now);
-        Boxes[msg.sender].isTilted = false;
+        Boxes[msg.sender].disturbedDuration += now - Boxes[msg.sender].lastDisturbed;
     }
     
     function startBox(address _boxID, address _currentCourier) {
         if (msg.value < minShippingCost)
             throw;
         Boxes[_boxID].onTrip = true;
-        Boxes[msg.sender].isTilted = false;
         Boxes[_boxID].sender = msg.sender;
         Boxes[_boxID].currentCourier = _currentCourier;
         LogStartTrip(_boxID, Boxes[_boxID].currentCourier, now, msg.value);
@@ -61,8 +61,11 @@ contract qualityPay {
         LogEndTrip(_boxID, Boxes[_boxID].currentCourier, now);
     }
     
-    function payoutBox(uint cPayout, address _boxID, uint change) onlycommandCenter{
+    function payoutBox(uint bPayout, uint cPayout, address _boxID, uint change) onlycommandCenter{
         Boxes[_boxID].onTrip = false;
+        if (_boxID.send(bPayout)){
+            
+        }
         if (Boxes[_boxID].currentCourier.send(cPayout)){
             
         }
