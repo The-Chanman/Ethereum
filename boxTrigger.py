@@ -8,11 +8,11 @@ def getEvents():
         for msg in messages:
             # import pdb; pdb.set_trace()
             print (msg.data)
-            if "BOX DISTURBED" in msg.data:
+            if "BOX DISTURBED BY LIGHT" in msg.data:
                 jsonData = json.loads(msg.data)
                 print ("Data: %s Core: %s" % (jsonData["data"], jsonData["coreid"]))
                 subprocess.call("/Users/echan/Documents/Github/Ethereum/boxFun.sh disturbed", shell=True)
-            elif "BOX FIXED" in msg.data:
+            elif "BOX FIXED FROM LIGHT" in msg.data:
                 jsonData = json.loads(msg.data)
                 print ("Data: %s Core: %s" % (jsonData["data"], jsonData["coreid"]))
                 subprocess.call("/Users/echan/Documents/Github/Ethereum/boxFun.sh fixed", shell=True)

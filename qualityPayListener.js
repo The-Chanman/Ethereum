@@ -1,18 +1,3 @@
-
-function timeConverter(UNIX_timestamp){
-  var a = new Date(UNIX_timestamp * 1000);
-  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var year = a.getFullYear();
-  var month = months[a.getMonth()];
-  var date = a.getDate();
-  var hour = a.getHours();
-  var min = a.getMinutes();
-  var sec = a.getSeconds();
-  var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-  return time;
-}
-
-
 function qualityPayListener(myContract){
   var onTrip = false;
   var disturbed = false;
@@ -22,7 +7,7 @@ function qualityPayListener(myContract){
   var bounty;
   var leeway = 60;
 
-  console.log("Setting contract Listeners")
+  console.log("Starting contract Listeners");
 
   var StartingTrip = qualityPay.LogStartTrip();
   StartingTrip.watch(function(error, result){
@@ -43,13 +28,14 @@ function qualityPayListener(myContract){
   BoxDisturbed.watch(function(error, result){
       if (!error && onTrip){
         console.log("*********************************************************************************");
-        console.log("Box " + result.args.boxID + " with courier " + result.args.courier + " at "+ timeConverter(result.args.timestamp) +" has been disturbed!");
+        console.log("Box " + result.args.boxID + " with courier " + result.args.courier + " at "+ timeConverter(result.args.timestamp) +" has been disturbed with " + result.args.disturbType + "!");
         console.log("*********************************************************************************");
+        // addToEventTable(result.args.boxID, result.args.courier, result.args.disturbType, "Start", result.args.timestamp);
         lastDisturbed = result.args.timestamp;
         disturbed = true;
       }
       else {
-        console.log("oops something went wrong...")
+        console.log("oops something went wrong...");
       }
   });
 
@@ -65,6 +51,7 @@ function qualityPayListener(myContract){
             console.log("Box has been disturbed for a total of " + disturbedDuration + " seconds on this trip.");
             console.log("*********************************************************************************");
             disturbed = false;
+            // addToEventTable(result.args.boxID, result.args.courier, result.args.disturbType, "Ended after " + secondsToMinutes(result.args.timestamp - lastDisturbed) + " minutes", result.args.timestamp);
           } else {
             console.log("Failed because disturbed == false");
           }
@@ -87,7 +74,7 @@ function qualityPayListener(myContract){
         console.log("*********************************************************************************");
         console.log("Box " + result.args.boxID + " is ending trip with courier " + result.args.courier + " at "+ timeConverter(result.args.timestamp) +"!");
         console.log("The Box was disturbed for " + disturbedDuration + " seconds out of a trip " + (result.args.timestamp - startTime) + " seconds long.");
-        console.log("The original services payout is " + web3.fromWei(bounty) + " - " + web3.fromWei(disturbedCost) + " for the box disturbances for a total of " + web3.fromWei(payout);
+        console.log("The original services payout is " + web3.fromWei(bounty) + " - " + web3.fromWei(disturbedCost) + " for the box disturbances for a total of " + web3.fromWei(payout));
         console.log("10% goes to the box to cover transaction fees, refunds, maintenance. 90% goes to the courier.");
         console.log("So " + web3.fromWei(bPayout) + " goes to the box to cover transaction fees, refunds, maintenance. " + web3.fromWei(cPayout) + " goes to the courier.");
         console.log("*********************************************************************************");
