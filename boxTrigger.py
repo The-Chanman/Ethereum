@@ -16,13 +16,13 @@ def getEvents():
                 jsonData = json.loads(msg.data)
                 print ("Data: %s Core: %s" % (jsonData["data"], jsonData["coreid"]))
                 subprocess.call("/Users/echan/Documents/Github/Ethereum/boxFun.sh fixedlight", shell=True)
-            elif "BOX DISTURBED FROM VIBRATION" in msg.data:
-                jsonData = json.loads(msg.data)
-                print ("Data: %s Core: %s" % (jsonData["data"], jsonData["coreid"]))
-                subprocess.call("/Users/echan/Documents/Github/Ethereum/boxFun.sh disturbedvibration", shell=True)
-            elif "BOX FIXED FROM VIBRATION" in msg.data:
-                jsonData = json.loads(msg.data)
-                print ("Data: %s Core: %s" % (jsonData["data"], jsonData["coreid"]))
-                subprocess.call("/Users/echan/Documents/Github/Ethereum/boxFun.sh fixedvibration", shell=True)
+            # elif "BOX DISTURBED FROM VIBRATION" in msg.data:
+            #     jsonData = json.loads(msg.data)
+            #     print ("Data: %s Core: %s" % (jsonData["data"], jsonData["coreid"]))
+            #     subprocess.call("/Users/echan/Documents/Github/Ethereum/boxFun.sh disturbedvibration", shell=True)
+            # elif "BOX FIXED FROM VIBRATION" in msg.data:
+            #     jsonData = json.loads(msg.data)
+            #     print ("Data: %s Core: %s" % (jsonData["data"], jsonData["coreid"]))
+            #     subprocess.call("/Users/echan/Documents/Github/Ethereum/boxFun.sh fixedvibration", shell=True)
 
 getEvents()
